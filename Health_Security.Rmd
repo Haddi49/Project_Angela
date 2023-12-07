@@ -1,0 +1,1346 @@
+---
+title: "Health Security"
+author: "Haddison Muree"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+##  SECTION 1: PERSONAL INFORMATION OF RESPONDENTS
+
+if(!require(tidyverse))install.packages("tidyverse")
+if(!require(ggtext))install.packages("ggtext")
+
+
+x<- readxl::read_excel("clean_questionaire.xlsx") %>%
+  janitor::clean_names() %>%
+  select(-section_2_public_diplomacy_and_health_security,
+         -section_3_public_diplomacy_misinformation_and_disinformation_practices,
+         -section_4_public_diplomacy_opportunities_for_health_security) %>%
+  rename(SD01 = age,
+         SD02 = gender,
+         SD03 = education,                                                                       HS04 = public_diplomacyfamiliarity,
+         HS05 = health_security_familiarity,
+         HS06 = who_familiarity,
+         HS07 = health_communication_who,
+         HS08 = who_health_communication_media_type_radio,
+         HS09 = who_health_communication_media_type_television,
+         HS10 = who_health_communication_media_type_print_media,
+         HS11 = who_health_communication_media_type_social_media,                                HS12 = who_health_communication_media_type_word_of_mouth,
+         HS13 = who_health_communication_function_in_adpotion_of_good_public_health_practices_educate_the_public,
+         HS14 = who_health_communication_function_in_adpotion_of_good_public_health_practices_inform_the_public_15,                                           
+         HS15 = who_health_communication_function_in_adpotion_of_good_public_health_practices_support_gok_health_communication,                                                          HS16 = who_health_communication_function_in_adpotion_of_good_public_health_practices_has_no_function_17,                                                                        HS17 = ever_received_health_communication_from_gok,
+         HS18 = gok_health_communication_media_frequency_rating_radio,
+         HS19 = gok_health_communication_media_frequency_rating_television,
+         HS20 = gok_health_communication_media_frequency_rating_print_media,
+         HS21 = gok_health_communication_media_frequency_rating_social_media,
+         HS22 = gok_health_communication_function_in_adpotion_of_good_public_health_practices_educate_the_public,
+         HS23 = who_health_communication_function_in_adpotion_of_good_public_health_practices_inform_the_public_24,
+         HS24 = who_health_communication_function_in_adpotion_of_good_public_health_practices_has_no_function_25,
+         MD25 = role_of_the_public_in_false_health_information_only_receive,
+         MD26 = role_of_the_public_in_false_health_information_receive_and_act_on_misinformation_disinformation,
+         MD27 = role_of_the_public_in_false_health_information_receive_or_generate_and_pass_on_to_others,
+         MD28 = role_of_the_public_in_false_health_information_receive_and_act_to_stop_spread,
+         MD29 = who_function_in_influencing_public_opinion_on_the_existence_of_covid_19_disease_educate_the_public,
+         MD30 = who_function_in_influencing_public_opinion_on_the_existence_of_covid_19_disease_inform_the_public,
+         MD31 = who_function_in_influencing_public_opinion_on_the_existence_of_covid_19_disease_support_gok_health_communication,
+         MD32 = who_function_in_influencing_public_opinion_on_the_existence_of_covid_19_disease_no_function,
+         MD33 = gok_function_in_influencing_public_opinion_on_the_existence_of_covid_19_disease_educate_the_public,
+         MD34 = gok_function_in_influencing_public_opinion_on_the_existence_of_covid_19_disease_inform_the_public,
+         MD35 = gok_function_in_influencing_public_opinion_on_the_existence_of_covid_19_disease_no_function,
+         MD36 = extent_of_gok_health_communication_effect_on_public_opinion_on_the_existence_of_covid_19_disease,
+         MD37 = extent_of_gok_function_of_communication_influence_on_public_knowledge_about_the_side_effect_of_covid_19_disease_educate_the_public,
+         MD38 = extent_of_gok_function_of_communication_influence_on_public_knowledge_about_the_side_effect_of_covid_19_disease_inform_the_public,
+         MD39 = extent_of_gok_function_of_communication_influence_on_public_knowledge_about_the_side_effect_of_covid_19_disease_no_function,
+         MD40 = gok_communication_effect_on_public_willingness_to_taking_covid_19_vaccine,
+         MD41 = awerness_of_covid_19_disease_communication_contray_to_gok_provided_information,
+         MD42 = awerness_of_covid_19_disease_source_of_communication_contray_to_gok_provided_information_radio,
+         MD43 = awerness_of_covid_19_disease_source_of_communication_contray_to_gok_provided_information_television,
+         MD44 = awerness_of_covid_19_disease_source_of_communication_contray_to_gok_provided_information_print_media,
+         MD45 = awerness_of_covid_19_disease_source_of_communication_contray_to_gok_provided_information_social_media,
+         MD46 = awerness_of_covid_19_vaccine_communication_contray_to_gok_provided_information,
+         MD47 = awerness_of_covid_19_vaccine_source_of_communication_contray_to_gok_provided_information_radio,
+         MD48 = awerness_of_covid_19_vaccine_source_of_communication_contray_to_gok_provided_information_television,
+         MD49 = awerness_of_covid_19_vaccine_source_of_communication_contray_to_gok_provided_information_print_media,
+         MD50 = awerness_of_covid_19_vaccine_source_of_communication_contray_to_gok_provided_information_social_media,
+         MD51 = role_played_by_gok_health_communication_in_reduction_of_incorrect_information_about_covid_19_dease_among_members_of_the_public_countering_false_information,
+         MD52 = role_played_by_gok_health_communication_in_reduction_of_incorrect_information_about_covid_19_dease_among_members_of_the_public_educating_on_relevant_infromation,
+         MD53 = role_played_by_gok_health_communication_in_reduction_of_incorrect_information_about_covid_19_dease_among_members_of_the_public_enabling_reporting_of_false_information_sources,
+         MD54 = role_played_by_gok_health_communication_in_reduction_of_incorrect_information_about_covid_19_vaccines_among_members_of_the_public_countering_false_information,
+         MD55 = role_played_by_gok_health_communication_in_reduction_of_incorrect_information_about_covid_19_vaccines_among_members_of_the_public_educating_on_relevant_infromation,
+         MD56 = role_played_by_gok_health_communication_in_reduction_of_incorrect_information_about_covid_19_vaccine_among_members_of_the_public_enabling_reporting_of_false_information_sources,
+         OH57 = to_what_extent_can_communication_function_by_who_play_a_role_in_promoting_good_public_health_practices_educating_the_public,
+         OH58 = to_what_extent_can_communication_function_by_who_play_a_role_in_promoting_good_public_health_practices_informing_the_public,
+         OH59 = to_what_extent_can_communication_function_by_who_play_a_role_in_promoting_good_public_health_practices_support_relevant_gok_communication,
+         OH60 = to_what_extent_can_communication_function_by_who_play_a_role_in_promoting_good_public_health_practices_countering_false_information,
+         OH61 = functions_communications_by_the_gok_play_in_promoting_good_public_health_practices_educating_the_public_by_setting_the_agenda,
+         OH62 = functions_communications_by_the_gok_play_in_promoting_good_public_health_practices_informing_the_public,
+         OH63 = functions_communications_by_the_gok_play_in_promoting_good_public_health_practices_countering_false_information,
+         OH64 = can_the_gok_use_social_media_for_communication,
+         OH65 = effectivity_of_social_media_by_gok_to_promote_good_health_practices,
+         OH66 = roles_non_state_actors_play_in_health_communication_to_promote_good_public_health_practices_support_gok_communication,
+         OH67 = roles_non_state_actors_play_in_health_communication_to_promote_good_public_health_practices_increase_communication_coverage,
+         OH68 = roles_non_state_actors_play_in_health_communication_to_promote_good_public_health_practices_supplement_communication_resources) %>%
+  mutate(SD01 = ifelse(SD01 == "45-54", "45-54 years", paste0(SD01))) %>%
+  mutate_all(~gsub(" years", '',.)) %>%
+  mutate(SD01 = ifelse(SD01 == ">54", "54 and above", paste0(SD01))) %>%
+  mutate(OH57 = ifelse(OH57 == "Significant effect", "Significant extent",
+                ifelse(OH57 == "Strongly disagree","No extent", paste0(OH57)))) %>%
+  mutate(OH58 = ifelse(OH58 == "Strongly disagree", "No extent",
+                ifelse(OH58 == "Significant effect", "Significant extent", paste0(OH58)))) %>%
+  mutate(OH59 = ifelse(OH59 == "Strongly disagree", "No extent", paste0(OH59))) %>%
+  mutate(OH60 = ifelse(OH60 == "Significant effect","Significant extent",
+                ifelse(OH60 == "Strongly disagree", "No extent", paste0(OH60))))
+  
+
+## GRAPHICAL PRESENTATION
+## SECTION 1: 
+
+# By Age
+
+f<- x %>%
+  group_by(SD01) %>%
+  count() %>%
+  ungroup() %>%
+  rename(num_1 = n) %>%
+  mutate(prop=round(num_1/13*100)) %>%
+  
+  
+  ggplot(., aes(x = "", y = prop, fill = SD01)) +
+  geom_col(color = "black") + 
+  geom_label(aes(label = paste0(prop, "%")), color = c("white", "white",1),
+            position = position_stack(vjust = 0.5),
+            show.legend = FALSE) +
+  guides(fill = guide_legend(title = "Age (yrs)")) +
+  scale_fill_viridis_d() +
+  coord_polar(theta = "y") +
+  theme_void()
+
+
+# By Education & Gender
+
+f1<- x %>%
+  group_by(SD02, SD03) %>%
+  count() %>%
+  mutate(SD03 = ifelse(SD03 == "Master's" & SD02 == "Female", "Female (Master's)",
+                ifelse(SD03 == "Master's" & SD02 == "Male", "Male (Master's)",
+                ifelse(SD03 == "PhD" & SD02 == "Male", "Male (PhD)", paste0(SD03))))) %>%
+  rename(num_2 = n) %>%
+  mutate(prop2=round(num_2/13*100)) %>%
+  
+  ggplot(., aes(x = SD03, y = prop2))+
+  geom_bar(stat = "identity", width = 0.6, fill = "#014782") +
+  geom_text(stat = "identity", aes(label = paste0(prop2, "%")), size = 3, hjust = 0.05, vjust = -1) +
+  scale_y_continuous(breaks = seq(0,100,20), expand = c(0,0.5), limits = c(0,100))+
+  # coord_fixed(ratio = 0.03)+
+  
+  labs(x = "Education by gender",
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 11, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 11, vjust = -0.7))
+
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r echo=FALSE, include=FALSE}
+
+## SECTION 2: PUBLIC DIPLOMACY AND HEALTH SECURITY
+
+## S1: Q1:Q4 Familiar with
+
+
+f2<- x %>%
+  summarise(`Familiarized with practices of Public diplomacy` = sum(HS04 == "Yes", na.rm = TRUE),
+            `Familiarized with concept of Health Security` = sum(HS05 == "Yes", na.rm = TRUE),
+            `Familiar with WHO` = sum(HS06 == "Yes", na.rm = TRUE),
+            `Familiar with WHO Health Communication` = sum(HS07 == "Yes", na.rm = TRUE)) %>%
+  mutate(all = rep("all")) %>%
+  pivot_longer(cols = -all) %>%
+  select(-all) %>%
+  mutate(prop3 = round((value/13)*100)) %>%
+  
+  ggplot(., aes(x = name, y = prop3, fill = name))+
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(stat = "identity", aes(label = paste0(prop3, "%")), size = 3, hjust = 0.05, vjust = -1) +
+  scale_y_continuous(expand = c(0,0.5), limits = c(0,105)) +
+  scale_fill_brewer(palette = 18)+
+  scale_x_discrete(labels = c("Familiar with WHO",
+                              "Familiar with<br>WHO Health<br>Communication",
+                              "Familiar with<br>concept of<br>Health Security",
+                              "Familiar with practices<br>of Public diplomacy")) +
+  
+  
+  labs(x = NULL,
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 11, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 11, vjust = -0.7),
+        legend.position = "none")
+  
+
+## S1: Q5 Rating WHO health communication media
+
+f3<- x %>%
+  group_by(HS08) %>%
+  count() %>%
+  ungroup() %>%
+  rename(`Rating WHO health communication media` = HS08, n_1 = n) %>%
+  mutate(prop = round((n_1/13)*100))
+
+
+f4<- x %>%
+  group_by(HS09) %>%
+  count() %>%
+  ungroup() %>%
+  rename(`Rating WHO health communication media` = HS09,
+         n_2 = n) %>%
+  mutate(prop = round((n_2/13)*100))
+
+ff3<- f3 %>% 
+  left_join(f4, by = ("Rating WHO health communication media"))
+
+  
+f5<- x %>%
+  group_by(HS10) %>%
+  count() %>%
+  ungroup() %>%
+  rename(`Rating WHO health communication media` = HS10,
+         n_3 = n) %>%
+  mutate(prop = round((n_3/13)*100))
+
+ff5<- ff3 %>%
+  left_join(f5, by = ("Rating WHO health communication media"))
+  
+f6<- x %>%
+  group_by(HS11) %>%
+  count() %>%
+  ungroup() %>%
+  rename(`Rating WHO health communication media` = HS11,
+         n_4 = n) %>%
+  mutate(prop = round((n_4/13)*100))
+
+ff6<- ff5 %>%
+  left_join(f6, by = ("Rating WHO health communication media"))
+
+
+f7<- x %>%
+  group_by(HS12) %>%
+  count() %>%
+  ungroup() %>%
+  rename(`Rating WHO health communication media` = HS12,
+         n_5 = n) %>%
+  mutate(prop = round((n_5/13)*100)) %>%
+  filter(!is.na(`Rating WHO health communication media`))
+
+ff7<- ff6 %>%
+  left_join(f7, by = ("Rating WHO health communication media")) %>%
+  rename(Radio = n_1,
+         `Radio ` = prop.x,
+         Television = n_2,
+         `Television ` = prop.y,
+         `Print Media` = n_3,
+         `Print Media ` = prop.x.x,
+         `Social Media` = n_4,
+         `Social Media ` = prop.y.y,
+         `Word of Mouth` = n_5,
+         `Word of Mouth ` = prop) %>%
+  select(`Rating WHO health communication media`,`Radio `, `Television `,  `Print Media `, `Social Media `,`Word of Mouth `) %>%
+  pivot_longer(cols = -`Rating WHO health communication media`) %>%
+  
+  ggplot(., aes(x = reorder(name,value), y = value, fill = factor(`Rating WHO health communication media`, levels = c("Never","Rarely","Occassionally","Frequently"))))+
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(stat = "identity", aes(label = paste0(value, "%")),position = position_stack(vjust = 0.5), size = 3)+
+  scale_fill_brewer(name = "Rating WHO health communication media", direction = 1)+
+  scale_y_continuous(expand = c(0,0.5), limits = c(0,105)) +
+  
+  coord_flip() + 
+  
+  labs(x = NULL,
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 10, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 10, vjust = -0.7),
+        axis.text.y = element_markdown(),
+        legend.position = "right",,
+        axis.line.y = element_line(color = "grey80"),
+        axis.line.x = element_blank(),
+        #panel.border = element_rect(colour = "grey80", fill=NA, size = 0.1),
+        legend.title = element_markdown(size = 9),
+        legend.text = element_markdown(size = 8))        
+  
+ 
+## S1: Q6 WHO health communication function in adoption of good health practices
+
+g<- x %>%
+  group_by(HS13) %>%
+  count() %>%
+  ungroup() %>%
+  rename(HS = HS13) %>%
+  mutate(prop = round((n/13)*100)) %>%
+  add_row(HS = "Strongly disagree")
+
+
+g1<- x %>%
+  group_by(HS14) %>%
+  count() %>%
+  ungroup() %>%
+  rename(HS = HS14)%>%
+  mutate(prop = round((n/13)*100))
+
+gg<- g %>%
+  left_join(g1, by = ("HS"))
+
+g2<- x %>%
+  group_by(HS15) %>%
+  count() %>%
+  ungroup() %>%
+  rename(HS = HS15)%>%
+  mutate(prop = round((n/13)*100))
+
+gg1<- gg %>%
+  left_join(g2, by = ("HS"))
+
+g3<- x %>%
+  group_by(HS16) %>%
+  count() %>%
+  ungroup() %>%
+  rename(HS = HS16)%>%
+  mutate(prop = round((n/13)*100))
+  
+gg2<- gg1 %>%
+  left_join(g3, by = ("HS")) %>%
+  rename(`WHO health communication function in adoption of good health practices` = HS,
+         `Educate the public` = n.x, 
+         `Educate the public ` = prop.x,
+         `Inform the public` = n.y,
+         `Inform the public ` = prop.y,
+         `Support GOK health communication` = n.x.x,
+         `Support GOK health communication ` = prop.x.x,
+         `Has no function` = n.y.y,
+         `Has no function ` = prop.y.y) %>%
+  select(`WHO health communication function in adoption of good health practices`, `Educate the public `,`Inform the public `,`Support GOK health communication `,`Has no function `) %>%
+  pivot_longer(cols =  -`WHO health communication function in adoption of good health practices`) %>%
+  
+  ggplot(., aes(x = name, y = value, fill = factor(`WHO health communication function in adoption of good health practices`, levels = c("Strongly disagree","Disagree","Neither agree nor disagree","Agree","Strongly agree"))))+
+  geom_bar(stat = "identity", width = 0.6)+
+  geom_text(stat = "identity", aes(label = paste0(value, "%")),position = position_stack(vjust = 0.5), size = 3)+
+  coord_flip() + 
+  scale_fill_brewer(palette = 17, name = "WHO health communication function<br>in adoption of good health practices") +
+  scale_y_continuous(expand = c(0,0.5), limits = c(0,105)) +
+  
+  labs(x = NULL,
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 10, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 10, vjust = -0.7),
+        axis.text.y = element_markdown(),
+        legend.position = "right",,
+        axis.line.y = element_line(color = "grey80"),
+        axis.line.x = element_blank(),
+        legend.title = element_markdown(size = 9),
+        legend.text = element_markdown(size = 8)) 
+  
+
+## S1: Q8 Rating GOK health communication media
+
+r3<- x %>%
+  group_by(HS18) %>%
+  count() %>%
+  ungroup() %>%
+  rename(`Rating GOK health communication media` = HS18, n_1 = n) %>%
+  mutate(prop = round((n_1/13)*100)) %>%
+  add_row(`Rating GOK health communication media` = "Never")
+  
+
+r4<- x %>%
+  group_by(HS19) %>%
+  count() %>%
+  ungroup() %>%
+  rename(`Rating GOK health communication media` = HS19,
+         n_2 = n) %>%
+  mutate(prop = round((n_2/13)*100))
+
+rr3<- r3 %>% 
+  left_join(r4, by = ("Rating GOK health communication media"))
+
+  
+r5<- x %>%
+  group_by(HS20) %>%
+  count() %>%
+  ungroup() %>%
+  rename(`Rating GOK health communication media` = HS20,
+         n_3 = n) %>%
+  mutate(prop = round((n_3/13)*100))
+
+rr5<- rr3 %>%
+  left_join(r5, by = ("Rating GOK health communication media"))
+  
+r6<- x %>%
+  group_by(HS21) %>%
+  count() %>%
+  ungroup() %>%
+  rename(`Rating GOK health communication media` = HS21,
+         n_4 = n) %>%
+  mutate(prop = round((n_4/13)*100))
+
+rr6<- rr5 %>%
+  left_join(r6, by = ("Rating GOK health communication media")) %>%
+  rename(Radio = n_1,
+         `Radio ` = prop.x,
+         Television = n_2,
+         `Television ` = prop.y,
+         `Print Media` = n_3,
+         `Print Media ` = prop.x.x,
+         `Social Media` = n_4,
+         `Social Media ` = prop.y.y,) %>%
+  select(`Rating GOK health communication media`,`Radio `, `Television `,  `Print Media `, `Social Media `) %>%
+  pivot_longer(cols = -`Rating GOK health communication media`) %>%
+  
+  ggplot(., aes(x = reorder(name,value), y = value, fill = factor(`Rating GOK health communication media`, levels = c("Never","Rarely","Occassionally","Frequently"))))+
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(stat = "identity", aes(label = paste0(value, "%")),position = position_stack(vjust = 0.5), size = 3)+
+  scale_fill_brewer(palette = 2, name = "Rating GOK health communication media")+
+  scale_y_continuous(expand = c(0,0.5), limits = c(0,105)) +
+  
+  coord_flip() + 
+  
+  labs(x = NULL,
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 10, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 10, vjust = -0.7),
+        axis.text.y = element_markdown(),
+        legend.position = "right",,
+        axis.line.y = element_line(color = "grey80"),
+        axis.line.x = element_blank(),
+        # panel.border = element_rect(colour = "grey80", fill=NA, size = 0.1),
+        legend.title = element_markdown(size = 9),
+        legend.text = element_markdown(size = 8))        
+  
+
+## S1: Q9 GOK health communication function in adoption of good health practices
+
+w<- x %>%
+  group_by(HS22) %>%
+  count() %>%
+  ungroup() %>%
+  rename(HS = HS22) %>%
+  mutate(prop = round((n/13)*100))%>%
+  add_row(HS = c("Disagree","Strongly disagree")) 
+
+
+w1<- x %>%
+  group_by(HS23) %>%
+  count() %>%
+  ungroup() %>%
+  rename(HS = HS23)%>%
+  mutate(prop = round((n/13)*100))
+
+ww<- w %>%
+  left_join(w1, by = ("HS"))
+
+w2<- x %>%
+  group_by(HS24) %>%
+  count() %>%
+  ungroup() %>%
+  rename(HS = HS24)%>%
+  mutate(prop = round((n/13)*100))
+
+ww1<- ww %>%
+  left_join(w2, by = ("HS")) %>%
+  rename(`GOK health communication function in adoption of good health practices` = HS,
+         `Educate the public` = n.x, 
+         `Educate the public ` = prop.x,
+         `Inform the public` = n.y,
+         `Inform the public ` = prop.y,
+         `Has no function` = n,
+         `Has no function ` = prop) %>%
+  select(`GOK health communication function in adoption of good health practices`, `Educate the public `,`Inform the public `,`Has no function `) %>%
+  pivot_longer(cols =  -`GOK health communication function in adoption of good health practices`) %>%
+  
+  ggplot(., aes(x = name, y = value, fill = factor(`GOK health communication function in adoption of good health practices`, levels = c("Strongly disagree","Disagree","Agree","Strongly agree"))))+
+  geom_bar(stat = "identity", width = 0.6)+
+  geom_text(stat = "identity", aes(label = paste0(value, "%")),position = position_stack(vjust = 0.5), size = 3)+
+  coord_flip() + 
+  scale_fill_brewer(palette = 3, name = "GOK health communication function<br>in adoption of good health practices") +
+  scale_y_continuous(expand = c(0,0.5), limits = c(0,105)) +
+  
+  labs(x = NULL,
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 10, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 10, vjust = -0.7),
+        axis.text.y = element_markdown(),
+        legend.position = "right",,
+        axis.line.y = element_line(color = "grey80"),
+        axis.line.x = element_blank(),
+        #panel.border = element_rect(colour = "grey80", fill=NA, size = 0.1),
+        legend.title = element_markdown(size = 9),
+        legend.text = element_markdown(size = 8)) 
+
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE, include=FALSE}
+
+## SECTION 3: PUBLIC DIPLOMACY, MISINFORMATION AND DISINFORMATION PRACTICES
+## S3: Q1 Role of the public in spread of false health information.
+
+
+d<- x %>%
+  group_by(MD25) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD25) %>%
+  mutate(prop = round((n/13)*100)) %>%
+  add_row(MD = c("Common","Not sure","Very common"))
+
+d1<- x %>%
+  group_by(MD26) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD26) %>%
+  mutate(prop = round((n/13)*100))
+
+dd<- d %>%
+  left_join(d1, by = ("MD"))
+
+d2<- x %>%
+  group_by(MD27) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD27) %>%
+  mutate(prop = round((n/13)*100))
+
+dd1<- dd %>%
+  left_join(d2, by = ("MD"))
+
+d3<- x %>%
+  group_by(MD28) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD28) %>%
+  mutate(prop = round((n/13)*100))
+
+dd2<- dd1 %>%
+  left_join(d3, by = ("MD")) %>%
+  rename(`Role of the public in spread of false health information` = MD, 
+         `Only receive` = n.x,
+         `Only receive ` = prop.x,
+         `Receive and act on misinformation/disinformation` = n.y,
+         `Receive and act on misinformation/disinformation ` = prop.y,
+         `Receive or generate and pass on to others` = n.x.x,
+         `Receive or generate and pass on to others ` = prop.x.x,
+         `Receive and act to stop spread` = n.y.y,
+         `Receive and act to stop spread ` = prop.y.y) %>%
+  select(`Role of the public in spread of false health information`,`Only receive `,`Receive and act on misinformation/disinformation `,`Receive or generate and pass on to others `,`Receive and act to stop spread `) %>%
+  pivot_longer(cols = -`Role of the public in spread of false health information`) %>%
+  
+  ggplot(., aes(x = name, y = value, fill = factor(`Role of the public in spread of false health information`, levels = c("Not sure","Rarely","Common","Very common","Frequently"))))+
+  geom_bar(stat = "identity", width = 0.6)+
+  geom_text(stat = "identity", aes(label = paste0(value, "%")),position = position_stack(vjust = 0.5), size = 3)+
+  coord_flip() + 
+  scale_fill_brewer(palette = 4, name = "Role of the public in spread<br> of false health information") +
+  scale_y_continuous(expand = c(0,0.5), limits = c(0,105)) +
+  
+  labs(x = NULL,
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 10, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 10, vjust = -0.7),
+        axis.text.y = element_markdown(),
+        legend.position = "right",,
+        axis.line.y = element_line(color = "grey80"),
+        axis.line.x = element_blank(),
+        #panel.border = element_rect(colour = "grey80", fill=NA, size = 0.1),
+        legend.title = element_markdown(size = 9),
+        legend.text = element_markdown(size = 8)) 
+
+
+
+## S3: Q2 WHO communication function on influencing public opinion on COVID19 disease
+
+t<- x %>%
+  group_by(MD29) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD29) %>%
+  mutate(prop = round((n/13)*100)) %>%
+  add_row(MD = c("Disagree","Strongly disagree"))
+
+t1<- x %>%
+  group_by(MD30) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD30) %>%
+  mutate(prop = round((n/13)*100))
+
+tt<- t %>%
+  left_join(t1, by = ("MD"))
+
+t2<- x %>%
+  group_by(MD31) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD31) %>%
+  mutate(prop = round((n/13)*100))
+
+tt1<- tt %>%
+  left_join(t2, by = ("MD"))
+
+t3<- x %>%
+  group_by(MD32) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD32) %>%
+  mutate(prop = round((n/13)*100))
+
+tt2<- tt1 %>%
+  left_join(t3, by = ("MD")) %>%
+  rename(`WHO communication function on influencing public opinion on COVID19 disease` = MD, 
+         `Educate the public` = n.x,
+         `Educate the public ` = prop.x,
+         `Inform the public` = n.y,
+         `Inform the public ` = prop.y,
+         `Support GOK health communication` = n.x.x,
+         `Support GOK health communication ` = prop.x.x,
+         `No function` = n.y.y,
+         `No function ` = prop.y.y) %>%
+  select(`WHO communication function on influencing public opinion on COVID19 disease`,`Educate the public `,`Inform the public `,`Support GOK health communication `,`No function `) %>%
+  pivot_longer(cols = -`WHO communication function on influencing public opinion on COVID19 disease`) %>%
+  
+  ggplot(., aes(x = name, y = value, fill = factor(`WHO communication function on influencing public opinion on COVID19 disease`, levels = c("Strongly disagree","Disagree","Neither agree or disagree","Agree","Strongly agree"))))+
+  geom_bar(stat = "identity", width = 0.6)+
+  geom_text(stat = "identity", aes(label = paste0(value, "%")),position = position_stack(vjust = 0.5), size = 3)+
+  coord_flip() + 
+  scale_fill_brewer(palette = 5, name = "WHO communication function on<br>influencing public opinion on<br>COVID19 disease existence") +
+  scale_y_continuous(expand = c(0,0.5), limits = c(0,105)) +
+  
+  labs(x = NULL,
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 10, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 10, vjust = -0.7),
+        axis.text.y = element_markdown(),
+        legend.position = "right",,
+        axis.line.y = element_line(color = "grey80"),
+        axis.line.x = element_blank(),
+        #panel.border = element_rect(colour = "grey80", fill=NA, size = 0.1),
+        legend.title = element_markdown(size = 9),
+        legend.text = element_markdown(size = 8)) 
+
+
+## S3: Q3 GOK communication function on influencing public opinion on COVID19 disease existence
+
+a<- x %>%
+  group_by(MD33) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD33) %>%
+  mutate(prop = round((n/13)*100)) %>%
+  add_row(MD = c("Strongly disagree"))
+
+a1<- x %>%
+  group_by(MD34) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD34) %>%
+  mutate(prop = round((n/13)*100))
+
+aa<- a %>%
+  left_join(a1, by = ("MD"))
+
+a2<- x %>%
+  group_by(MD35) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD35) %>%
+  mutate(prop = round((n/13)*100))
+
+aa1<- aa %>%
+  left_join(a2, by = ("MD")) %>%
+  rename(`GOK communication function on influencing public opinion on COVID19 disease existence` = MD, 
+         `Educate the public` = n.x,
+         `Educate the public ` = prop.x,
+         `Inform the public` = n.y,
+         `Inform the public ` = prop.y,
+         `No function` = n,
+         `No function ` = prop) %>%
+  select(`GOK communication function on influencing public opinion on COVID19 disease existence`,`Educate the public `,`Inform the public `,`No function `) %>%
+  pivot_longer(cols = -`GOK communication function on influencing public opinion on COVID19 disease existence`) %>%
+  
+  ggplot(., aes(x = name, y = value, fill = factor(`GOK communication function on influencing public opinion on COVID19 disease existence`, levels = c("Strongly disagree","Disagree","Agree","Strongly agree"))))+
+  geom_bar(stat = "identity", width = 0.6)+
+  geom_text(stat = "identity", aes(label = paste0(value, "%")),position = position_stack(vjust = 0.5), size = 3)+
+  coord_flip() + 
+  scale_fill_brewer(palette = 6, name = "GOK communication function on<br>influencing public opinion on<br>COVID19 disease existence") +
+  scale_y_continuous(expand = c(0,0.5), limits = c(0,105)) +
+  
+  labs(x = NULL,
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 10, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 10, vjust = -0.7),
+        axis.text.y = element_markdown(),
+        legend.position = "right",,
+        axis.line.y = element_line(color = "grey80"),
+        axis.line.x = element_blank(),
+        #panel.border = element_rect(colour = "grey80", fill=NA, size = 0.1),
+        legend.title = element_markdown(size = 9),
+        legend.text = element_markdown(size = 8)) 
+
+## S3: Q4 Effect of GOK communication extent on public opinion on COVID19 disease existence
+
+s<- x %>%
+  group_by(MD36) %>%
+  count() %>%
+  ungroup() %>%
+  rename(num_1 = n) %>%
+  mutate(prop = round(num_1/13*100)) %>%
+  
+  
+  ggplot(., aes(x = "", y = prop, fill = MD36)) +
+  geom_col(color = "black") + 
+  geom_label(aes(label = paste0(prop, "%")), color = c("white",1),
+            position = position_stack(vjust = 0.5),
+            show.legend = FALSE) +
+ 
+  guides(fill = guide_legend(title = "Effect of GOK communication extent<br>on public opinion on COVID19<br>disease existence")) +
+  scale_fill_viridis_d(option = "D") +
+  coord_polar(theta = "y") +
+  theme_void() + 
+  theme(legend.title = element_markdown())
+
+
+## S3: Q5 Extent of influence GOK communication has on public knowledge on side effects of COVID-19 vaccine
+
+h<- x %>%
+  group_by(MD37) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD37) %>%
+  mutate(prop = round((n/13)*100)) %>%
+  add_row(MD = c("Strongly disagree"))
+
+h1<- x %>%
+  group_by(MD38) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD38) %>%
+  mutate(prop = round((n/13)*100))
+
+hh<- h %>%
+  left_join(h1, by = ("MD"))
+
+h2<- x %>%
+  group_by(MD39) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD39) %>%
+  mutate(prop = round((n/13)*100))
+
+hh1<- aa %>%
+  left_join(h2, by = ("MD")) %>%
+  rename(`Extent of influence GOK communication has on public knowledge on side effects of COVID-19 vaccine` = MD, 
+         `Educate the public` = n.x,
+         `Educate the public ` = prop.x,
+         `Inform the public` = n.y,
+         `Inform the public ` = prop.y,
+         `No function` = n,
+         `No function ` = prop) %>%
+  select(`Extent of influence GOK communication has on public knowledge on side effects of COVID-19 vaccine`,`Educate the public `,`Inform the public `,`No function `) %>%
+  pivot_longer(cols = -`Extent of influence GOK communication has on public knowledge on side effects of COVID-19 vaccine`) %>%
+  
+  ggplot(., aes(x = name, y = value, fill = factor(`Extent of influence GOK communication has on public knowledge on side effects of COVID-19 vaccine`, levels = c("Strongly disagree","Disagree","Agree","Strongly agree"))))+
+  geom_bar(stat = "identity", width = 0.6)+
+  geom_text(stat = "identity", aes(label = paste0(value, "%")),position = position_stack(vjust = 0.5), size = 3)+
+  coord_flip() + 
+  scale_fill_brewer(palette = 7, name = "Extent of influence GOK communication<br>has on public knowledge on side<br>effects of COVID-19 vaccine") +
+  scale_y_continuous(expand = c(0,0.5), limits = c(0,105)) +
+  
+  labs(x = NULL,
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 10, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 10, vjust = -0.7),
+        axis.text.y = element_markdown(),
+        legend.position = "right",,
+        axis.line.y = element_line(color = "grey80"),
+        axis.line.x = element_blank(),
+        #panel.border = element_rect(colour = "grey80", fill=NA, size = 0.1),
+        legend.title = element_markdown(size = 9),
+        legend.text = element_markdown(size = 8)) 
+
+## S3: Q6,Q7 & S2Q7 (i) GOK health communication has had an influence on public willingness to COVID-19 vaccine
+# (ii) Aware of contrary health communication on COVID-19 that is not from GOK
+# (iii) You have received health communication from GOK
+# (iv) GOK can use social media for health communication
+
+j<- x %>%
+  summarize(#`Have received health communication from GOK` = sum(HS17 == "Yes", na.rm = TRUE),
+             `GOK health communication has had an influence on public willingness to COVID-19 vaccine` = sum(MD40 == "Yes", na.rm = TRUE),
+             `Aware of contrary health communication on COVID-19 that is not from GOK` = sum(MD41 == "Yes", na.rm = TRUE),
+            # `GOK can use social media for health communication` = sum(OH64 == "Yes", na.rm = TRUE),
+            `Aware of contrary health communication on COVID-19 vaccine that is not from GOK` = sum(MD46 == "Yes", na.rm = TRUE)) %>%
+  mutate(all = rep("all")) %>%
+  pivot_longer(cols = -all) %>%
+  select(-all) %>%
+  mutate(prop3 = round((value/13)*100)) %>%
+  
+  
+  ggplot(., aes(x = name, y = prop3, fill = name))+
+  geom_bar(stat = "identity", width = 0.6)+
+  geom_text(stat = "identity", aes(label = paste0(prop3, "%")),position = position_stack(vjust = 0.5), size = 3)+
+
+  scale_fill_brewer(palette = 8) +
+   scale_x_discrete(labels = c("Aware of contrary health<br>communication on<br>COVID-19 disease that<br>is not from GOK",
+                               "Aware of contrary health<br>communication on<br>COVID-19 vaccine that<br>is not from GOK",
+                               # "GOK can use social<br>media for health<br>communication",
+                               "GOK health communication<br>has had an influence on<br>public willingness to<br>COVID-19 vaccine")) +
+                               #"Have received health <br>communication from GOK"))+
+  scale_y_continuous(expand = c(0,0.5), limits = c(0,105)) +
+   
+  labs(x = NULL,
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 10, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 10, vjust = -0.7),
+        axis.text.y = element_markdown(),
+        legend.position = "none",,
+        axis.line = element_line(color = "grey80")) 
+  
+## S3: Q7b Rate sources of contrary health communication on COVID-19 that is not from GOK
+  
+k3<- x %>%
+  group_by(MD42) %>%
+  count() %>%
+  ungroup() %>%
+  rename(`Rate sources of contrary health communication on COVID-19 that is not from GOK` = MD42, n_1 = n) %>%
+  mutate(prop = round((n_1/13)*100)) %>%
+  add_row(`Rate sources of contrary health communication on COVID-19 that is not from GOK` = "Frequently")
+  
+
+k4<- x %>%
+  group_by(MD43) %>%
+  count() %>%
+  ungroup() %>%
+  rename(`Rate sources of contrary health communication on COVID-19 that is not from GOK` = MD43,
+         n_2 = n) %>%
+  mutate(prop = round((n_2/13)*100))
+
+kk3<- k3 %>% 
+  left_join(k4, by = ("Rate sources of contrary health communication on COVID-19 that is not from GOK"))
+
+  
+k5<- x %>%
+  group_by(MD44) %>%
+  count() %>%
+  ungroup() %>%
+  rename(`Rate sources of contrary health communication on COVID-19 that is not from GOK` = MD44,
+         n_3 = n) %>%
+  mutate(prop = round((n_3/13)*100))
+
+kk5<- kk3 %>%
+  left_join(k5, by = ("Rate sources of contrary health communication on COVID-19 that is not from GOK"))
+  
+k6<- x %>%
+  group_by(MD45) %>%
+  count() %>%
+  ungroup() %>%
+  rename(`Rate sources of contrary health communication on COVID-19 that is not from GOK` = MD45,
+         n_4 = n) %>%
+  mutate(prop = round((n_4/13)*100))
+
+kk6<- kk5 %>%
+  left_join(k6, by = ("Rate sources of contrary health communication on COVID-19 that is not from GOK")) %>%
+  rename(Radio = n_1,
+         `Radio ` = prop.x,
+         Television = n_2,
+         `Television ` = prop.y,
+         `Print Media` = n_3,
+         `Print Media ` = prop.x.x,
+         `Social Media` = n_4,
+         `Social Media ` = prop.y.y,) %>%
+  select(`Rate sources of contrary health communication on COVID-19 that is not from GOK`,`Radio `, `Television `,  `Print Media `, `Social Media `) %>%
+  pivot_longer(cols = -`Rate sources of contrary health communication on COVID-19 that is not from GOK`) %>%
+  
+  ggplot(., aes(x = reorder(name,value), y = value, fill = factor(`Rate sources of contrary health communication on COVID-19 that is not from GOK`, levels = c("Not sure","Rarely","Common","Frequently"))))+
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(stat = "identity", aes(label = paste0(value, "%")),position = position_stack(vjust = 0.5), size = 3)+
+  scale_fill_brewer(palette = 9, name = "Rate sources of contrary health<br>communication on COVID-19<br>that is not from GOK")+
+  scale_y_continuous(expand = c(0,0.5), limits = c(0,105)) +
+  
+  coord_flip() + 
+  
+  labs(x = NULL,
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 10, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 10, vjust = -0.7),
+        axis.text.y = element_markdown(),
+        legend.position = "right",,
+        axis.line.y = element_line(color = "grey80"),
+        axis.line.x = element_blank(),
+        # panel.border = element_rect(colour = "grey80", fill=NA, size = 0.1),
+        legend.title = element_markdown(size = 9),
+        legend.text = element_markdown(size = 8))       
+  
+
+## S3: Q8 Rate sources of contrary health communication on COVID-19 vaccines that is not from GOK
+  
+l3<- x %>%
+  group_by(MD47) %>%
+  count() %>%
+  ungroup() %>%
+  rename(`Rate sources of contrary health communication on COVID-19 that is not from GOK` = MD47, n_1 = n) %>%
+  mutate(prop = round((n_1/13)*100)) %>%
+  add_row(`Rate sources of contrary health communication on COVID-19 that is not from GOK` = c("Frequently","Very common"))
+  
+
+l4<- x %>%
+  group_by(MD48) %>%
+  count() %>%
+  ungroup() %>%
+  rename(`Rate sources of contrary health communication on COVID-19 that is not from GOK` = MD48,
+         n_2 = n) %>%
+  mutate(prop = round((n_2/13)*100))
+
+ll3<- l3 %>% 
+  left_join(l4, by = ("Rate sources of contrary health communication on COVID-19 that is not from GOK"))
+
+  
+l5<- x %>%
+  group_by(MD49) %>%
+  count() %>%
+  ungroup() %>%
+  rename(`Rate sources of contrary health communication on COVID-19 that is not from GOK` = MD49,
+         n_3 = n) %>%
+  mutate(prop = round((n_3/13)*100))
+
+ll5<- ll3 %>%
+  left_join(l5, by = ("Rate sources of contrary health communication on COVID-19 that is not from GOK"))
+  
+l6<- x %>%
+  group_by(MD50) %>%
+  count() %>%
+  ungroup() %>%
+  rename(`Rate sources of contrary health communication on COVID-19 that is not from GOK` = MD50,
+         n_4 = n) %>%
+  mutate(prop = round((n_4/13)*100))
+
+ll6<- ll5 %>%
+  left_join(l6, by = ("Rate sources of contrary health communication on COVID-19 that is not from GOK")) %>%
+  rename(Radio = n_1,
+         `Radio ` = prop.x,
+         Television = n_2,
+         `Television ` = prop.y,
+         `Print Media` = n_3,
+         `Print Media ` = prop.x.x,
+         `Social Media` = n_4,
+         `Social Media ` = prop.y.y,) %>%
+  select(`Rate sources of contrary health communication on COVID-19 that is not from GOK`,`Radio `, `Television `,  `Print Media `, `Social Media `) %>%
+  pivot_longer(cols = -`Rate sources of contrary health communication on COVID-19 that is not from GOK`) %>%
+  
+  ggplot(., aes(x = reorder(name,value), y = value, fill = factor(`Rate sources of contrary health communication on COVID-19 that is not from GOK`, levels = c("Not sure","Rarely","Common","Very common","Frequently"))))+
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(stat = "identity", aes(label = paste0(value, "%")),position = position_stack(vjust = 0.5), size = 3)+
+  scale_fill_brewer(palette = 10, name = "Rate sources of contrary health communication<br> on COVID-19 vaccine that is not from GOK")+
+  scale_y_continuous(expand = c(0,0.5), limits = c(0,105)) +
+  
+  coord_flip() + 
+  
+  labs(x = NULL,
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 10, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 10, vjust = -0.7),
+        axis.text.y = element_markdown(),
+        legend.position = "right",,
+        axis.line.y = element_line(color = "grey80"),
+        axis.line.x = element_blank(),
+        # panel.border = element_rect(colour = "grey80", fill=NA, size = 0.1),
+        legend.title = element_markdown(size = 9),
+        legend.text = element_markdown(size = 8))  
+
+  
+  
+## S3: Q9 Role of GOK health communication in reduction of COVID-19 disease false information
+
+z<- x %>%
+  group_by(MD51) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD51) %>%
+  mutate(prop = round((n/13)*100)) %>%
+  add_row(MD = c("Minor role"))
+
+z1<- x %>%
+  group_by(MD52) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD52) %>%
+  mutate(prop = round((n/13)*100))
+
+zz<- z %>%
+  left_join(z1, by = ("MD"))
+
+z2<- x %>%
+  group_by(MD53) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD53) %>%
+  mutate(prop = round((n/13)*100))
+
+zz1<- zz %>%
+  left_join(z2, by = ("MD")) %>%
+  rename(`Role of GOK health communication in reduction of COVID-19 disease false information` = MD, 
+         `Countering False Information` = n.x,
+         `Countering False Information ` = prop.x,
+         `Educating on Relevant Information` = n.y,
+         `Educating on Relevant Information ` = prop.y,
+         `Enabling Reporting of False Information Sources` = n,
+         `Enabling Reporting of False Information Sources ` = prop) %>%
+  select(`Role of GOK health communication in reduction of COVID-19 disease false information`,`Countering False Information `,`Educating on Relevant Information `,`Enabling Reporting of False Information Sources `) %>%
+  pivot_longer(cols = -`Role of GOK health communication in reduction of COVID-19 disease false information`) %>%
+  
+  ggplot(., aes(x = name, y = value, fill = factor(`Role of GOK health communication in reduction of COVID-19 disease false information`, levels = c("No role","Minor role","Average role","Significant role","Greatest role"))))+
+  geom_bar(stat = "identity", width = 0.6)+
+  geom_text(stat = "identity", aes(label = paste0(value, "%")),position = position_stack(vjust = 0.5), size = 3)+
+  coord_flip() + 
+  scale_fill_brewer(palette = 11, name = "Role of GOK health communication<br>in reduction of COVID-19 disease<br>false information") +
+  scale_y_continuous(expand = c(0,0.5), limits = c(0,105)) +
+  
+  labs(x = NULL,
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 10, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 10, vjust = -0.7),
+        axis.text.y = element_markdown(),
+        legend.position = "right",,
+        axis.line.y = element_line(color = "grey80"),
+        axis.line.x = element_blank(),
+        # panel.border = element_rect(colour = "grey80", fill=NA, size = 0.1),
+        legend.title = element_markdown(size = 9),
+        legend.text = element_markdown(size = 8)) 
+
+
+## S3: Q10 Role of GOK health communication in reduction of COVID-19 vaccines false information
+
+v<- x %>%
+  group_by(MD54) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD54) %>%
+  mutate(prop = round((n/13)*100)) %>%
+  add_row(MD = c("Minor role"))
+
+v1<- x %>%
+  group_by(MD55) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD55) %>%
+  mutate(prop = round((n/13)*100))
+
+vv<- v %>%
+  left_join(v1, by = ("MD"))
+
+v2<- x %>%
+  group_by(MD56) %>%
+  count() %>%
+  ungroup() %>%
+  rename(MD = MD56) %>%
+  mutate(prop = round((n/13)*100))
+
+vv1<- vv %>%
+  left_join(v2, by = ("MD")) %>%
+  rename(`Role of GOK health communication in reduction of COVID-19 disease false information` = MD, 
+         `Countering False Information` = n.x,
+         `Countering False Information ` = prop.x,
+         `Educating on Relevant Information` = n.y,
+         `Educating on Relevant Information ` = prop.y,
+         `Enabling Reporting of False Information Sources` = n,
+         `Enabling Reporting of False Information Sources ` = prop) %>%
+  select(`Role of GOK health communication in reduction of COVID-19 disease false information`,`Countering False Information `,`Educating on Relevant Information `,`Enabling Reporting of False Information Sources `) %>%
+  pivot_longer(cols = -`Role of GOK health communication in reduction of COVID-19 disease false information`) %>%
+  
+  ggplot(., aes(x = reorder(name,value), y = value, fill = factor(`Role of GOK health communication in reduction of COVID-19 disease false information`, levels = c("No role","Minor role","Average role","Significant role","Greatest role"))))+
+  geom_bar(stat = "identity", width = 0.6)+
+  geom_text(stat = "identity", aes(label = paste0(value, "%")),position = position_stack(vjust = 0.5), size = 3)+
+  coord_flip() + 
+  scale_fill_brewer(palette = 12, name = "Role of GOK health communication<br>in reduction of COVID-19 vaccines<br>false information") +
+  scale_y_continuous(expand = c(0,0.5), limits = c(0,105)) +
+  
+  labs(x = NULL,
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 10, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 10, vjust = -0.7),
+        axis.text.y = element_markdown(),
+        legend.position = "right",,
+        axis.line.y = element_line(color = "grey80"),
+        axis.line.x = element_blank(),
+        # panel.border = element_rect(colour = "grey80", fill=NA, size = 0.1),
+        legend.title = element_markdown(size = 9),
+        legend.text = element_markdown(size = 8)) 
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+```{r, echo=FALSE, include=FALSE}
+
+## SECTION 4: PUBLIC DIPLOMACY OPPORTUNITIES FOR HEALTH SECURITY
+## S4: Q1 Extent of WHO health communication promoting good health practices in Kenya  
+
+b<- x %>%
+  group_by(OH57) %>%
+  count() %>%
+  ungroup() %>%
+  rename(OH = OH57) %>%
+  mutate(prop = round((n/13)*100)) 
+
+b1<- x %>%
+  group_by(OH58) %>%
+  count() %>%
+  ungroup() %>%
+  rename(OH = OH58) %>%
+  mutate(prop = round((n/13)*100))
+
+bb<- b %>%
+  left_join(b1, by = ("OH"))
+
+b2<- x %>%
+  group_by(OH59) %>%
+  count() %>%
+  ungroup() %>%
+  rename(OH = OH59) %>%
+  mutate(prop = round((n/13)*100))
+
+bb1<- bb %>%
+  left_join(b2, by = ("OH"))
+
+b3<- x %>%
+  group_by(OH60) %>%
+  count() %>%
+  ungroup() %>%
+  rename(OH = OH60) %>%
+  mutate(prop = round((n/13)*100))
+
+bb2<- bb1 %>%
+  left_join(b3, by = ("OH")) %>%
+  rename(`Extent of WHO health communication promoting good health practices in Kenya` = OH, 
+         `Educate the public` = n.x,
+         `Educate the public ` = prop.x,
+         `Inform the public` = n.y,
+         `Inform the public ` = prop.y,
+         `Support relevant GOK communication` = n.x.x,
+         `Support relevant GOK communication ` = prop.x.x,
+         `Countering false information` = n.y.y,
+         `Countering false information ` = prop.y.y) %>%
+  select(`Extent of WHO health communication promoting good health practices in Kenya`,`Educate the public `,`Inform the public `,`Support relevant GOK communication `,`Countering false information `) %>%
+  pivot_longer(cols = -`Extent of WHO health communication promoting good health practices in Kenya`) %>%
+  
+  ggplot(., aes(x = name, y = value, fill = factor(`Extent of WHO health communication promoting good health practices in Kenya`,levels = c("No extent","Average extent","Significant extent","Great extent"))))+
+  geom_bar(stat = "identity", width = 0.6)+
+  geom_text(stat = "identity", aes(label = paste0(value, "%")),position = position_stack(vjust = 0.5), size = 3)+
+  coord_flip() + 
+  scale_fill_brewer(palette = 13, name = "Extent of WHO health communication<br>promoting good health practices<br>in Kenya") +
+  scale_y_continuous(expand = c(0,0.5), limits = c(0,105)) +
+  
+  labs(x = NULL,
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 10, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 10, vjust = -0.7),
+        axis.text.y = element_markdown(),
+        legend.position = "right",,
+        axis.line.y = element_line(color = "grey80"),
+        axis.line.x = element_blank(),
+        # panel.border = element_rect(colour = "grey80", fill=NA, size = 0.1),
+        legend.title = element_markdown(size = 9),
+        legend.text = element_markdown(size = 8)) 
+
+
+## S4: Q2 Function GOK health communication can play in promoting good health practices 
+n<- x %>%
+  group_by(OH61) %>%
+  count() %>%
+  ungroup() %>%
+  rename(OH = OH61) %>%
+  mutate(prop = round((n/13)*100)) %>%
+  add_row(OH = c("Disagree","Strongly disagree"))
+
+n1<- x %>%
+  group_by(OH62) %>%
+  count() %>%
+  ungroup() %>%
+  rename(OH = OH62) %>%
+  mutate(prop = round((n/13)*100))
+
+nn<- n %>%
+  left_join(n1, by = ("OH"))
+
+n2<- x %>%
+  group_by(OH63) %>%
+  count() %>%
+  ungroup() %>%
+  rename(OH = OH63) %>%
+  mutate(prop = round((n/13)*100))
+
+nn1<- nn %>%
+  left_join(n2, by = ("OH")) %>%
+  rename(`Function GOK health communication can play in promoting good health practices` = OH, 
+         `Educating the public by setting the agenda` = n.x,
+         `Educating the public by setting the agenda ` = prop.x,
+         `Inform the public` = n.y,
+         `Inform the public ` = prop.y,
+         `Countering false information` = n,
+         `Countering false information ` = prop) %>%
+  select(`Function GOK health communication can play in promoting good health practices`,`Educating the public by setting the agenda `,`Inform the public `,`Countering false information `) %>%
+  pivot_longer(cols = -`Function GOK health communication can play in promoting good health practices`) %>%
+  
+  ggplot(., aes(x = name, y = value, fill = factor(`Function GOK health communication can play in promoting good health practices`, levels = c("Strongly disagree","Disagree","Agree","Strongly agree"))))+
+  geom_bar(stat = "identity", width = 0.6)+
+  geom_text(stat = "identity", aes(label = paste0(value, "%")),position = position_stack(vjust = 0.5), size = 3)+
+  #coord_flip() + 
+  scale_fill_brewer(palette = 14, name = "Function GOK health communication<br>can play in promoting good<br>health practices") +
+  
+  scale_x_discrete(labels = c("Countering false<br>information","Educating the public by<br> setting the agenda","Inform the public"))+
+  scale_y_continuous(expand = c(0,0.5))+
+  
+  labs(x = NULL,
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 10, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 10, vjust = -0.7),
+        axis.text.y = element_markdown(),
+        legend.position = "right",,
+        axis.line = element_line(color = "grey80"),
+        legend.title = element_markdown(size = 9),
+        legend.text = element_markdown(size = 8)) 
+
+
+## S4: Q5 Effectiveness of social media by GOK in promoting good health practices
+
+m<- x %>%
+  summarise(`Average effect` = sum(OH65 == "Average effect", na.rm = TRUE),
+            `Greatest effect` = sum(OH65 == "Greatest effect", na.rm = TRUE),
+            `Minor effect` = sum(OH65 == "Minor effect", na.rm = TRUE),
+            `Significant effect` = sum(OH65 == "Significant effect", na.rm = TRUE),
+            `No effect` = sum(OH65 == "No effect", na.rm = TRUE)) %>%
+  mutate(all = rep("all")) %>%
+  pivot_longer(cols = -all) %>%
+  select(-all) %>%
+  mutate(prop3 = round((value/13)*100)) %>%
+  
+  
+  ggplot(., aes(x = name, y = prop3, fill = factor(name, levels = c("No effect","Minor effect","Average effect","Significant effect","Greatest effect"))))+
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(stat = "identity", aes(label = paste0(prop3, "%")), size = 3, hjust = 0.05, vjust = -1) +
+  scale_y_continuous(expand = c(0,0.5), limits = c(0,105)) +
+  scale_x_discrete(limits = c("No effect","Minor effect","Average effect","Significant effect","Greatest effect")) + 
+  scale_fill_brewer(palette = 15)+
+
+  labs(x = "Effectiveness of social media use by GOK in promoting good health practices",
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 11, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 11, vjust = -0.7),
+        legend.position = "none")
+
+
+## S4: Q6 Roles non-state actors can play in health communication to promote good health practices
+
+p<- x %>%
+  group_by(OH66) %>%
+  count() %>%
+  ungroup() %>%
+  rename(OH = OH66) %>%
+  mutate(prop = round((n/13)*100)) 
+
+p1<- x %>%
+  group_by(OH67) %>%
+  count() %>%
+  ungroup() %>%
+  rename(OH = OH67) %>%
+  mutate(prop = round((n/13)*100))
+
+pp<- p %>%
+  left_join(p1, by = ("OH"))
+
+p2<- x %>%
+  group_by(OH68) %>%
+  count() %>%
+  ungroup() %>%
+  rename(OH = OH68) %>%
+  mutate(prop = round((n/13)*100))
+
+pp1<- pp %>%
+  left_join(p2, by = ("OH")) %>%
+  rename(`Roles non-state actors can play in health communication to promot good health practices` = OH, 
+         `Support GOK communication` = n.x,
+         `Support GOK communication ` = prop.x,
+         `Increase communication coverage` = n.y,
+         `Increase communication coverage ` = prop.y,
+         `Supplement communication resources` = n,
+         `Supplement communication resources ` = prop) %>%
+  select(`Roles non-state actors can play in health communication to promot good health practices`,`Support GOK communication `,`Increase communication coverage `,`Supplement communication resources `) %>%
+  pivot_longer(cols = -`Roles non-state actors can play in health communication to promot good health practices`) %>%
+  
+  ggplot(., aes(x = name, y = value, fill = factor(`Roles non-state actors can play in health communication to promot good health practices`, levels = c("Average role","Significant role","Great role"))))+
+  geom_bar(stat = "identity", width = 0.6)+
+  geom_text(stat = "identity", aes(label = paste0(value, "%")),position = position_stack(vjust = 0.5), size = 3)+
+  #coord_flip() + 
+  scale_fill_brewer(palette = 16, name = "Roles non-state actors can play in<br>health communication to promote<br>good health practices") +
+  
+  scale_x_discrete(labels = c("Increase communication<br>coverage","Supplement<br>communication<br>resources","Support GOK<br> communication"))+
+  scale_y_continuous(expand = c(0,0.5))+
+  
+  labs(x = NULL,
+       y = "Percent (%)") +
+  
+  theme_classic()+
+  theme(axis.text.x = element_markdown(size = 10, margin = margin(t = 0.1, unit = "inch")),
+        axis.title.x = element_text(size = 10, vjust = -0.7),
+        axis.text.y = element_markdown(),
+        legend.position = "right",,
+        axis.line = element_line(color = "grey80"),
+        legend.title = element_markdown(size = 9),
+        legend.text = element_markdown(size = 8)) 
+
+
+
+
+
+```
+
